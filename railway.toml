@@ -1,8 +1,8 @@
 [build]
-  buildCommand = "pip install -r backend/requirements.txt"
+buildCommand = "pip install -r backend/requirements.txt"
 
 [start]
-  startCommand = "gunicorn -w 4 -b 0.0.0.0:${PORT} backend.app:app"
+startCommand = "gunicorn -w 4 -b 0.0.0.0:${PORT} backend.app:app"
 
 [python]
-  pythonVersion = "3.11"
+pythonVersion = "3.11"
