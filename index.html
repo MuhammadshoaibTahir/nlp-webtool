@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>English NLP Analyzer</title>
+  <script defer src="script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 font-sans">
+  <div class="max-w-5xl mx-auto mt-8 p-6 bg-white shadow-lg rounded-lg">
+    <h1 class="text-3xl font-bold mb-4 text-center">🧠 English NLP Analyzer</h1>
+
+    <textarea id="inputText" class="w-full p-3 border rounded mb-4" rows="5" placeholder="Type or paste English text..."></textarea>
+
+    <div class="flex flex-wrap gap-4 justify-center mb-4">
+      <button onclick="analyzeText()" class="bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700">Analyze</button>
+      <button onclick="clearAll()" class="bg-gray-400 text-white px-5 py-2 rounded hover:bg-gray-500">Clear</button>
+      <button onclick="downloadExcel()" class="bg-green-600 text-white px-5 py-2 rounded hover:bg-green-700">Download Excel</button>
+    </div>
+
+    <div class="flex gap-4 mb-4">
+      <input id="filterInput" type="text" onkeyup="filterTable()" placeholder="Search POS or NER..." class="p-2 border rounded w-1/2">
+    </div>
+
+    <div id="output" class="overflow-x-auto"></div>
+  </div>
+</body>
+</html>
+    <div class="text-center text-xs text-gray-600 italic mt-4 space-y-1">
+      <div><strong>Developed by Muhammad Shoaib Tahir</strong></div>
+      <div>
+        <a href="https://www.linkedin.com/in/muhammad-shoaib-tahir-3a9103179" target="_blank" class="text-blue-600 hover:underline mx-2">
+          LinkedIn
+        </a>
+        |
+        <a href="https://github.com/MuhammadshoaibTahir" target="_blank" class="text-blue-600 hover:underline mx-2">
+          GitHub
+        </a>
+        |
+        <a href="mailto:shoaibtahir410@gmail.com" class="text-blue-600 hover:underline mx-2">
+          shoaibtahir410@gmail.com
+        </a>
+      </div>
+    </div>
+  `;
