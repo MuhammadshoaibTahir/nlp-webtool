@@ -1,4 +1,3 @@
-Flask
-spacy
-textstat
+flask
 flask-cors
+spacy
