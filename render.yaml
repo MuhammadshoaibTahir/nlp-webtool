@@ -2,6 +2,5 @@ services:
   - type: web
     name: nlp-webtool
     env: python
-    buildCommand: pip install -r backend/requirements.txt
-    startCommand: python backend/app.py
-    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
