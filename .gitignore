@@ -1,0 +1,29 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.so
+
+# Virtual environments
+.env
+.venv/
+env/
+venv/
+
+# Jupyter Notebooks
+.ipynb_checkpoints
+
+# Logs and local settings
+*.log
+*.sqlite3
+
+# IDEs
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+
+# node/npm (if you use frontend)
+node_modules/
+dist/
+build/
