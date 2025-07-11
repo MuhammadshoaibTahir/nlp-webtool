@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: nlp-webtool
+    env: python
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: gunicorn backend.app:app
+    pythonVersion: 3.10.13
