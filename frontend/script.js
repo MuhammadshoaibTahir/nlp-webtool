@@ -12,7 +12,7 @@ async function analyzeText() {
   }
 
   try {
-    const response = await fetch("https://glowing-lamb-82.loca.lt/analyze", {
+    const response = await fetch("https://abc123.ngrok.io/analyze", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text: input })
