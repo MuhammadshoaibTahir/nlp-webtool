@@ -1,6 +1,5 @@
-// Ensure the function is only called after the libraries are loaded
 document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("analyzeBtn").addEventListener("click", analyzeText);
+  document.getElementById("analyzeButton").addEventListener("click", analyzeText);
 });
 
 function analyzeText() {
