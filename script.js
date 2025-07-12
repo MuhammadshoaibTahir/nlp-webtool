@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("analyzeButton").addEventListener("click", analyzeText);
+  const button = document.querySelector("button");
+  button.addEventListener("click", analyzeText);
 });
 
 function analyzeText() {
