@@ -19,7 +19,7 @@ function analyzeText() {
 
   const wordList = doc.terms().out('array');
   const lemmas = doc.terms().data().map(t => `${t.text} → ${t.normal}`);
-  const syllables = wordList.map(w => `${w} (${syllable(w)})`).join(', ');
+  const syllables = wordList.map(w => `${w} (${window.syllable(w)})`).join(', ');
 
   let output = `📝 Total Sentences: ${sentences.length}\n\n`;
 
