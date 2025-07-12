@@ -5,24 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Advanced English NLP Analyzer</title>
   <link rel="stylesheet" href="style.css" />
-  <script src="https://unpkg.com/compromise"></script>
-  <script src="https://cdn.jsdelivr.net/npm/syllable"></script>
+  <script defer src="https://unpkg.com/compromise"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/syllable"></script>
+  <script defer src="script.js"></script>
 </head>
 <body>
   <div class="container">
     <h1>🧠 English NLP Analyzer</h1>
-    <p class="subtitle">Analyze your sentence for tense, negation, POS, lemmas, syllables, sentiment (basic), and more.</p>
+    <p class="subtitle">Analyze your sentence for tense, negation, POS, lemmas, syllables, and more.</p>
 
     <textarea id="textInput" rows="6" placeholder="Type or paste English text here..."></textarea>
-    <button onclick="analyzeText()">🔍 Analyze Text</button>
+    <button id="analyzeBtn">🔍 Analyze Text</button>
 
     <div id="output" class="output-box"></div>
   </div>
 
   <footer>
-    Built with 💙 by <a href="https://github.com/MuhammadshoaibTahir" target="_blank">Muhammad Shoaib Tahir</a> using JavaScript NLP (Compromise.js)
+    Built with 💙 by
+    <a href="https://github.com/MuhammadshoaibTahir" target="_blank">Muhammad Shoaib Tahir</a>
+    using JavaScript NLP (Compromise.js)
   </footer>
-
-  <script src="script.js"></script>
 </body>
 </html>

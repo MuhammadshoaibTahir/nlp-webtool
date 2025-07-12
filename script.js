@@ -1,3 +1,8 @@
+// Ensure the function is only called after the libraries are loaded
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("analyzeBtn").addEventListener("click", analyzeText);
+});
+
 function analyzeText() {
   const text = document.getElementById("textInput").value.trim();
   if (!text) {
