@@ -3,14 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>English Sentence Analyzer</title>
+  <title>Advanced English NLP Analyzer</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://unpkg.com/compromise"></script>
+  <script src="https://cdn.jsdelivr.net/npm/syllable"></script>
 </head>
 <body>
   <div class="container">
-    <h1>🧠 English Sentence Analyzer</h1>
-    <p class="subtitle">Analyze tense, negation, and structure of your sentence using NLP in the browser.</p>
+    <h1>🧠 English NLP Analyzer</h1>
+    <p class="subtitle">Analyze your sentence for tense, negation, POS, lemmas, syllables, sentiment (basic), and more.</p>
 
     <textarea id="textInput" rows="6" placeholder="Type or paste English text here..."></textarea>
     <button onclick="analyzeText()">🔍 Analyze Text</button>
@@ -19,9 +20,64 @@
   </div>
 
   <footer>
-    Built with 💙 using JavaScript + NLP
+    Built with 💙 using JavaScript NLP (Compromise.js)
   </footer>
 
-  <script src="script.js"></script>
+  <script>
+    function analyzeText() {
+      const text = document.getElementById("textInput").value.trim();
+      if (!text) {
+        alert("Please enter a sentence.");
+        return;
+      }
+
+      const doc = nlp(text);
+      const sentences = doc.sentences().out('array');
+      const nounPhrases = doc.nouns().out('array');
+      const verbs = doc.verbs();
+      const negations = doc.match('#Negative');
+      const topics = doc.topics().out('array');
+
+      const wordList = doc.terms().out('array');
+      const lemmas = doc.terms().data().map(t => `${t.text} → ${t.normal}`);
+      const syllables = wordList.map(w => `${w} (${syllable(w)})`).join(', ');
+
+      let output = `📝 Total Sentences: ${sentences.length}\n\n`;
+
+      sentences.forEach((s, i) => {
+        const sDoc = nlp(s);
+        const v = sDoc.verbs().data()[0];
+        const tense = v ? v.tense : "Unknown";
+        const hasNeg = sDoc.has('#Negative') ? 'Yes' : 'No';
+
+        output += `Sentence ${i + 1}:\n`;
+        output += `• ${s}\n`;
+        output += `  - Tense: ${tense}\n`;
+        output += `  - Negation: ${hasNeg}\n`;
+        output += `  - Complexity: ${s.length > 120 ? 'Complex' : 'Simple'}\n`;
+        output += `\n`;
+      });
+
+      output += `🔍 Noun Phrases: ${nounPhrases.join(', ') || 'None'}\n`;
+      output += `🔍 Verbs: ${verbs.out('array').join(', ') || 'None'}\n`;
+      output += `🔍 Negation Words: ${negations.out('array').join(', ') || 'None'}\n`;
+      output += `🔍 Named Entities: ${topics.join(', ') || 'None'}\n\n`;
+
+      output += `📚 POS Count:\n`;
+      const posCounts = doc.out('tags');
+      let counts = {};
+      posCounts.forEach(tags => {
+        tags.forEach(tag => counts[tag] = (counts[tag] || 0) + 1);
+      });
+      for (let [tag, count] of Object.entries(counts)) {
+        output += `- ${tag}: ${count}\n`;
+      }
+
+      output += `\n🧩 Lemmas:\n` + lemmas.join('\n') + '\n\n';
+      output += `🔠 Syllables per Word:\n${syllables}\n`;
+
+      document.getElementById("output").innerText = output;
+    }
+  </script>
 </body>
 </html>
