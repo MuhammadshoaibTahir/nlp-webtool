@@ -1,27 +1,93 @@
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Body */
 body {
-  font-family: Arial, sans-serif;
-  padding: 20px;
-  background-color: #f0f4f8;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(to right, #f4f9ff, #eef7ff);
+  color: #333;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
+/* Container */
+.container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px 30px;
+  background-color: #ffffff;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+}
+
+/* Title */
+h1 {
+  font-size: 2.2rem;
+  color: #222;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: #666;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Textarea */
 textarea {
-  font-size: 16px;
-  width: 80%;
+  width: 100%;
+  font-size: 1rem;
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  resize: vertical;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
 }
 
+/* Button */
 button {
-  padding: 10px 20px;
-  font-size: 16px;
+  margin-top: 15px;
+  width: 100%;
   background-color: #007bff;
   color: white;
+  font-size: 1.1rem;
+  padding: 12px;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease;
 }
 
-#output {
-  margin-top: 20px;
+button:hover {
+  background-color: #0056b3;
+}
+
+/* Output */
+.output-box {
+  margin-top: 25px;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 20px;
+  white-space: pre-wrap;
+  font-family: 'Consolas', monospace;
+  line-height: 1.5;
+  font-size: 0.95rem;
+}
+
+/* Footer */
+footer {
+  margin-top: auto;
+  text-align: center;
   padding: 15px;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 0 5px #ccc;
+  background: #eaeef2;
+  font-size: 0.9rem;
+  color: #666;
 }

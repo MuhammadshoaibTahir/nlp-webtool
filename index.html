@@ -2,18 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>English NLP Analyzer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>English Sentence Analyzer</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://unpkg.com/compromise"></script>
 </head>
 <body>
-  <h1>English Sentence Analyzer</h1>
+  <div class="container">
+    <h1>🧠 English Sentence Analyzer</h1>
+    <p class="subtitle">Analyze tense, negation, and structure of your sentence using NLP in the browser.</p>
 
-  <textarea id="textInput" rows="6" cols="80" placeholder="Type a sentence here..."></textarea>
-  <br><br>
-  <button onclick="analyzeText()">Analyze</button>
+    <textarea id="textInput" rows="6" placeholder="Type or paste English text here..."></textarea>
+    <button onclick="analyzeText()">🔍 Analyze Text</button>
 
-  <div id="output"></div>
+    <div id="output" class="output-box"></div>
+  </div>
+
+  <footer>
+    Built with 💙 using JavaScript + NLP
+  </footer>
 
   <script src="script.js"></script>
 </body>

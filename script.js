@@ -11,25 +11,23 @@ function analyzeText() {
   const verbs = doc.verbs();
   const negations = doc.match('#Negative');
 
-  let output = `<h3>Analysis</h3>`;
-  output += `<b>Total Sentences:</b> ${sentences.length}<br><br>`;
+  let output = `📝 Total Sentences: ${sentences.length}\n\n`;
 
   sentences.forEach((s, i) => {
     const sDoc = nlp(s);
     const v = sDoc.verbs().data()[0];
     const tense = v ? v.tense : "Unknown";
-
     const hasNeg = sDoc.has('#Negative') ? 'Yes' : 'No';
 
-    output += `<b>Sentence ${i + 1}:</b> ${s}<br>`;
-    output += ` - Tense: ${tense}<br>`;
-    output += ` - Negation: ${hasNeg}<br>`;
-    output += `<hr>`;
+    output += `Sentence ${i + 1}:\n`;
+    output += `• ${s}\n`;
+    output += `  - Tense: ${tense}\n`;
+    output += `  - Negation: ${hasNeg}\n\n`;
   });
 
-  output += `<b>Noun Phrases:</b> ${nounPhrases.join(', ') || 'None'}<br>`;
-  output += `<b>Verbs:</b> ${verbs.out('array').join(', ') || 'None'}<br>`;
-  output += `<b>Negation Words:</b> ${negations.out('array').join(', ') || 'None'}<br>`;
+  output += `🔍 Noun Phrases: ${nounPhrases.join(', ') || 'None'}\n`;
+  output += `🔍 Verbs: ${verbs.out('array').join(', ') || 'None'}\n`;
+  output += `🔍 Negation Words: ${negations.out('array').join(', ') || 'None'}\n`;
 
-  document.getElementById("output").innerHTML = output;
+  document.getElementById("output").innerText = output;
 }
