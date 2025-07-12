@@ -20,7 +20,7 @@
   </div>
 
   <footer>
-    Built with 💙 using JavaScript NLP (Compromise.js)
+    Built with 💙 by <a href="https://github.com/MuhammadshoaibTahir" target="_blank">Muhammad Shoaib Tahir</a> using JavaScript NLP (Compromise.js)
   </footer>
 
   <script>
@@ -54,8 +54,7 @@
         output += `• ${s}\n`;
         output += `  - Tense: ${tense}\n`;
         output += `  - Negation: ${hasNeg}\n`;
-        output += `  - Complexity: ${s.length > 120 ? 'Complex' : 'Simple'}\n`;
-        output += `\n`;
+        output += `  - Complexity: ${s.length > 120 ? 'Complex' : 'Simple'}\n\n`;
       });
 
       output += `🔍 Noun Phrases: ${nounPhrases.join(', ') || 'None'}\n`;
@@ -73,7 +72,7 @@
         output += `- ${tag}: ${count}\n`;
       }
 
-      output += `\n🧩 Lemmas:\n` + lemmas.join('\n') + '\n\n';
+      output += `\n🧩 Lemmas:\n${lemmas.join('\n')}\n\n`;
       output += `🔠 Syllables per Word:\n${syllables}\n`;
 
       document.getElementById("output").innerText = output;
