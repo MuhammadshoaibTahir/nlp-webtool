@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, send_file
 import nltk
 import spacy
+nltk.data.path.append("./nltk_data")
 from textblob import TextBlob
 from langdetect import detect
 from nltk.corpus import stopwords
