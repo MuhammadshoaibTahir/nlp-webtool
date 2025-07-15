@@ -1,22 +1,35 @@
 from flask import Flask, render_template, request, send_file
 import nltk
 import spacy
-nltk.data.path.append("nltk_data")
-nltk.data.path.append("./nltk_data")
+import os
 from textblob import TextBlob
 from langdetect import detect
 from nltk.corpus import stopwords
 from collections import Counter
 from io import BytesIO
-import os
-
 from spacy import displacy
 
-# Download required NLTK resources
-nltk.download("punkt")
-nltk.download("stopwords")
-nltk.download("wordnet")
-nltk.download("averaged_perceptron_tagger")
+# Ensure nltk_data path exists
+nltk.data.path.append("nltk_data")
+nltk.data.path.append("./nltk_data")
+
+# Try downloading essential packages (safe version)
+try:
+    nltk.data.find("tokenizers/punkt")
+except LookupError:
+    nltk.download("punkt")
+try:
+    nltk.data.find("corpora/stopwords")
+except LookupError:
+    nltk.download("stopwords")
+try:
+    nltk.data.find("corpora/wordnet")
+except LookupError:
+    nltk.download("wordnet")
+try:
+    nltk.data.find("taggers/averaged_perceptron_tagger")
+except LookupError:
+    nltk.download("averaged_perceptron_tagger")
 
 app = Flask(__name__)
 nlp = spacy.load("en_core_web_sm")
@@ -48,7 +61,6 @@ def index():
         dependencies = [(token.text, token.dep_, token.head.text) for token in doc]
         dep_svg = displacy.render(doc, style="dep", jupyter=False)
 
-        # Sentiment timeline
         sentence_sentiments = []
         for i, sentence in enumerate(blob.sentences):
             sentence_sentiments.append({
@@ -57,6 +69,12 @@ def index():
                 "subjectivity": round(sentence.sentiment.subjectivity, 3),
                 "index": i + 1
             })
+
+        # Try extracting noun phrases (may fail if Brown corpus is missing)
+        try:
+            noun_phrases = blob.noun_phrases
+        except Exception:
+            noun_phrases = ["Error: Missing corpus for noun phrases."]
 
         output = {
             "tokens": tokens,
@@ -71,7 +89,7 @@ def index():
             "sentence_sentiments": sentence_sentiments,
             "summary": str(blob)[:300] + "...",
             "word_freq": word_freq.most_common(10),
-            "noun_phrases": blob.noun_phrases,
+            "noun_phrases": noun_phrases,
             "dependencies": dependencies,
             "dep_svg": dep_svg
         }
