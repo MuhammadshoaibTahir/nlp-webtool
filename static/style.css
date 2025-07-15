@@ -1,0 +1,45 @@
+.navbar-text {
+  font-weight: 500;
+  font-size: 15px;
+}
+body {
+  background-color: #f4f7fb;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+textarea {
+  resize: vertical;
+}
+
+.card {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+}
+
+.card-header {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+ul {
+  padding-left: 20px;
+}
+
+h2 {
+  color: #0d6efd;
+  font-weight: bold;
+}
+body {
+  background-color: #f5f9fc;
+  font-family: 'Segoe UI', sans-serif;
+  color: #333;
+}
+
+h2 {
+  font-weight: bold;
+  color: #0d6efd;
+}
+
+.card {
+  border-radius: 10px;
+}
