@@ -2,7 +2,7 @@ services:
   - type: web
     name: nlp-analyzer
     runtime: python
-    buildCommand: ""
+    buildCommand: ./build.sh  # ⬅️ add this line
     startCommand: gunicorn app:app
     envVars:
       - key: PYTHON_VERSION

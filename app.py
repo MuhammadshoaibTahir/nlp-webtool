@@ -15,10 +15,6 @@ nltk.data.path.append("./nltk_data")
 
 # Try downloading essential packages (safe version)
 try:
-    nltk.data.find("tokenizers/punkt")
-except LookupError:
-    nltk.download("punkt")
-try:
     nltk.data.find("corpora/stopwords")
 except LookupError:
     nltk.download("stopwords")
