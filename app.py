@@ -3,11 +3,11 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
 
-# Flask app initialization
+# Initialize Flask app
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', 'your-secret-key')  # Replace with a secure secret
+app.secret_key = os.environ.get('SECRET_KEY', 'your-secret-key')  # Change this in production
 
-# Database config (SQLite)
+# Database configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
@@ -17,9 +17,9 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(150), nullable=False)
-    account_type = db.Column(db.String(50), default='free')  # Options: 'free', 'student', 'university'
+    account_type = db.Column(db.String(50), default='free')  # 'free', 'student', 'university'
 
-# Create DB tables
+# Create database tables
 with app.app_context():
     db.create_all()
 
@@ -32,23 +32,24 @@ def index():
     user = User.query.get(session['user_id'])
 
     if request.method == 'POST':
-        text = request.form['text']
+        text = request.form.get('text', '')
         if user.account_type == 'free':
             flash('This feature is available for paid users only. Please upgrade your account.', 'danger')
             return redirect(url_for('pricing'))
 
-        # Simulated NLP analysis result (replace this with your logic)
+        # Simulate NLP result
         result = f"Analyzed: {text}"
-        return render_template('index.html', result=result, user=user)
+        return render_template('index.html', user=user, output=result, is_paid=True, text=text)
 
-    return render_template('index.html', user=user)
+    return render_template('index.html', user=user, is_paid=user.account_type != 'free')
 
-# Registration route
+# Register route
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
+        account_type = request.form.get('role', 'free')
 
         if not email or not password:
             flash('Please fill out all fields.', 'warning')
@@ -60,7 +61,7 @@ def register():
             return redirect(url_for('login'))
 
         hashed_password = generate_password_hash(password, method='sha256')
-        new_user = User(email=email, password=hashed_password)
+        new_user = User(email=email, password=hashed_password, account_type=account_type)
         db.session.add(new_user)
         db.session.commit()
 
@@ -117,6 +118,6 @@ def upgrade(tier):
 
     return redirect(url_for('index'))
 
-# Run the app
+# Run app
 if __name__ == '__main__':
     app.run(debug=True)
