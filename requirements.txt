@@ -7,3 +7,4 @@ textblob==0.17.1
 setuptools
 wheel
 langdetect
+flask_sqlalchemy

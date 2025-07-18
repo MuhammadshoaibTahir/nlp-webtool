@@ -1,109 +1,116 @@
-from flask import Flask, render_template, request, send_file
-import nltk
-import spacy
+from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import generate_password_hash, check_password_hash
 import os
-from textblob import TextBlob
-from langdetect import detect
-from nltk.corpus import stopwords
-from collections import Counter
-from io import BytesIO
-from spacy import displacy
 
-# Ensure nltk_data path exists
-nltk.data.path.append("nltk_data")
-nltk.data.path.append("./nltk_data")
-
-# Try downloading essential packages (safe version)
-try:
-    nltk.data.find("corpora/stopwords")
-except LookupError:
-    nltk.download("stopwords")
-try:
-    nltk.data.find("corpora/wordnet")
-except LookupError:
-    nltk.download("wordnet")
-try:
-    nltk.data.find("taggers/averaged_perceptron_tagger")
-except LookupError:
-    nltk.download("averaged_perceptron_tagger")
-
+# Flask app initialization
 app = Flask(__name__)
-nlp = spacy.load("en_core_web_sm")
+app.secret_key = os.environ.get('SECRET_KEY', 'your-secret-key')  # Change to a secure secret in production
 
-@app.route("/", methods=["GET", "POST"])
+# Database config
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
+
+# User model
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(150), unique=True, nullable=False)
+    password = db.Column(db.String(150), nullable=False)
+    account_type = db.Column(db.String(50), default='free')  # Options: 'free', 'student', 'university'
+
+# Create DB tables if they don't exist
+with app.app_context():
+    db.create_all()
+
+# Home route
+@app.route('/', methods=['GET', 'POST'])
 def index():
-    text = ""
-    output = {}
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
 
-    if request.method == "POST":
-        text = request.form["text"]
-        blob = TextBlob(text)
-        doc = nlp(text)
+    user = User.query.get(session['user_id'])
 
-        tokens = nltk.word_tokenize(text)
-        lemmatized = [token.lemma_ for token in doc]
-        pos_tags = nltk.pos_tag(tokens)
-        entities = [(ent.text, ent.label_) for ent in doc.ents]
+    if request.method == 'POST':
+        text = request.form['text']
+        if user.account_type == 'free':
+            flash('This feature is available for paid users only. Please upgrade your account.', 'danger')
+            return redirect(url_for('pricing'))
+        
+        # Simulated analysis (replace with your real logic)
+        result = f"Analyzed: {text}"
+        return render_template('index.html', result=result, user=user)
 
-        try:
-            language = detect(text)
-        except:
-            language = "Could not detect"
+    return render_template('index.html', user=user)
 
-        stop_words = set(stopwords.words("english"))
-        filtered = [w for w in tokens if w.lower() not in stop_words]
-        word_freq = Counter(filtered)
+# Registration route
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
 
-        dependencies = [(token.text, token.dep_, token.head.text) for token in doc]
-        dep_svg = displacy.render(doc, style="dep", jupyter=False)
+        existing_user = User.query.filter_by(email=email).first()
+        if existing_user:
+            flash('Email already registered. Please login.', 'warning')
+            return redirect(url_for('login'))
 
-        sentence_sentiments = []
-        for i, sentence in enumerate(blob.sentences):
-            sentence_sentiments.append({
-                "sentence": str(sentence),
-                "polarity": round(sentence.sentiment.polarity, 3),
-                "subjectivity": round(sentence.sentiment.subjectivity, 3),
-                "index": i + 1
-            })
+        hashed_password = generate_password_hash(password, method='sha256')
+        new_user = User(email=email, password=hashed_password)
+        db.session.add(new_user)
+        db.session.commit()
 
-        # Try extracting noun phrases (may fail if Brown corpus is missing)
-        try:
-            noun_phrases = blob.noun_phrases
-        except Exception:
-            noun_phrases = ["Error: Missing corpus for noun phrases."]
+        flash('Registration successful. Please login.', 'success')
+        return redirect(url_for('login'))
 
-        output = {
-            "tokens": tokens,
-            "lemmatized": lemmatized,
-            "pos_tags": pos_tags,
-            "entities": entities,
-            "language": language,
-            "sentiment": {
-                "polarity": round(blob.sentiment.polarity, 3),
-                "subjectivity": round(blob.sentiment.subjectivity, 3)
-            },
-            "sentence_sentiments": sentence_sentiments,
-            "summary": str(blob)[:300] + "...",
-            "word_freq": word_freq.most_common(10),
-            "noun_phrases": noun_phrases,
-            "dependencies": dependencies,
-            "dep_svg": dep_svg
-        }
+    return render_template('register.html')
 
-    return render_template("index.html", output=output, text=text)
+# Login route
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
 
-@app.route("/download", methods=["POST"])
-def download():
-    text = request.form["export_text"]
-    buffer = BytesIO()
-    buffer.write(text.encode("utf-8"))
-    buffer.seek(0)
-    return send_file(
-        buffer,
-        as_attachment=True,
-        download_name="nlp_output.txt",
-        mimetype="text/plain"
-    )
+        user = User.query.filter_by(email=email).first()
+        if user and check_password_hash(user.password, password):
+            session['user_id'] = user.id
+            flash('Login successful!', 'success')
+            return redirect(url_for('index'))
+        else:
+            flash('Invalid email or password.', 'danger')
 
-if __name__ == "__main__":
+    return render_template('login.html')
+
+# Logout route
+@app.route('/logout')
+def logout():
+    session.clear()
+    flash('Logged out successfully.', 'info')
+    return redirect(url_for('login'))
+
+# Pricing route
+@app.route('/pricing')
+def pricing():
+    return render_template('pricing.html')
+
+# Upgrade account route
+@app.route('/upgrade/<tier>')
+def upgrade(tier):
+    if 'user_id' not in session:
+        flash('Please login first.', 'warning')
+        return redirect(url_for('login'))
+
+    user = User.query.get(session['user_id'])
+    if tier in ['student', 'university']:
+        user.account_type = tier
+        db.session.commit()
+        flash(f'Upgraded to {tier.title()} plan.', 'success')
+    else:
+        flash('Invalid upgrade option.', 'danger')
+
+    return redirect(url_for('index'))
+
+# Run the app
+if __name__ == '__main__':
     app.run(debug=True)
