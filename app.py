@@ -32,14 +32,19 @@ def index():
 
     user = User.query.get(session['user_id'])
 
-    output = None
-    text = ''
+    # 🔥 FIX: handle missing user
+    if user is None:
+        session.clear()
+        flash("Session expired or user not found. Please log in again.", "warning")
+        return redirect(url_for('login'))
+
     if request.method == 'POST':
         text = request.form.get('text', '')
-        output = f"Analyzed: {text}"  # Simulated NLP result
+        # Show output to free users without downloads or visuals
+        result = f"Analyzed: {text}"
+        return render_template('index.html', user=user, output=result, is_paid=(user.account_type != 'free'), text=text)
 
-    is_paid = user.account_type != 'free'
-    return render_template('index.html', user=user, output=output, is_paid=is_paid, text=text)
+    return render_template('index.html', user=user, is_paid=(user.account_type != 'free'))
 
 # Register route
 @app.route('/register', methods=['GET', 'POST'])
