@@ -6,6 +6,8 @@ import os
 # Initialize Flask app
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'your-secret-key')  # Change this in production
+app.config['DEBUG'] = True  # ✅ Add this line to enable debug mode
+
 
 # Database configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
