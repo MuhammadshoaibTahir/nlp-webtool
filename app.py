@@ -5,9 +5,9 @@ import os
 
 # Flask app initialization
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', 'your-secret-key')  # Change to a secure secret in production
+app.secret_key = os.environ.get('SECRET_KEY', 'your-secret-key')  # Replace with a secure secret
 
-# Database config
+# Database config (SQLite)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
@@ -19,7 +19,7 @@ class User(db.Model):
     password = db.Column(db.String(150), nullable=False)
     account_type = db.Column(db.String(50), default='free')  # Options: 'free', 'student', 'university'
 
-# Create DB tables if they don't exist
+# Create DB tables
 with app.app_context():
     db.create_all()
 
@@ -36,8 +36,8 @@ def index():
         if user.account_type == 'free':
             flash('This feature is available for paid users only. Please upgrade your account.', 'danger')
             return redirect(url_for('pricing'))
-        
-        # Simulated analysis (replace with your real logic)
+
+        # Simulated NLP analysis result (replace this with your logic)
         result = f"Analyzed: {text}"
         return render_template('index.html', result=result, user=user)
 
@@ -47,8 +47,12 @@ def index():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
+        email = request.form.get('email')
+        password = request.form.get('password')
+
+        if not email or not password:
+            flash('Please fill out all fields.', 'warning')
+            return redirect(url_for('register'))
 
         existing_user = User.query.filter_by(email=email).first()
         if existing_user:
@@ -69,10 +73,11 @@ def register():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
+        email = request.form.get('email')
+        password = request.form.get('password')
 
         user = User.query.filter_by(email=email).first()
+
         if user and check_password_hash(user.password, password):
             session['user_id'] = user.id
             flash('Login successful!', 'success')
@@ -94,7 +99,7 @@ def logout():
 def pricing():
     return render_template('pricing.html')
 
-# Upgrade account route
+# Upgrade route
 @app.route('/upgrade/<tier>')
 def upgrade(tier):
     if 'user_id' not in session:
@@ -102,6 +107,7 @@ def upgrade(tier):
         return redirect(url_for('login'))
 
     user = User.query.get(session['user_id'])
+
     if tier in ['student', 'university']:
         user.account_type = tier
         db.session.commit()
