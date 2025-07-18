@@ -5,7 +5,8 @@ import os
 
 # Initialize Flask app
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', 'your-secret-key')
+import secrets
+app.secret_key = secrets.token_hex(32)
 app.config['DEBUG'] = True
 
 # Database configuration
@@ -47,49 +48,38 @@ def index():
     return render_template('index.html', user=user, is_paid=(user.account_type != 'free'))
 
 # Register route
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
-        account_type = request.form.get('role', 'free')
-
-        if not email or not password:
-            flash('Please fill out all fields.', 'warning')
-            return redirect(url_for('register'))
-
-        existing_user = User.query.filter_by(email=email).first()
-        if existing_user:
-            flash('Email already registered. Please login.', 'warning')
-            return redirect(url_for('login'))
-
-        hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
-        new_user = User(email=email, password=hashed_password, account_type=account_type)
-        db.session.add(new_user)
-        db.session.commit()
-
-        flash('Registration successful. Please login.', 'success')
-        return redirect(url_for('login'))
-
-    return render_template('register.html')
-
-# Login route
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
-
+        email = request.form['email']
+        password = request.form['password']
         user = User.query.filter_by(email=email).first()
-
         if user and check_password_hash(user.password, password):
             session['user_id'] = user.id
-            flash('Login successful!', 'success')
             return redirect(url_for('index'))
         else:
-            flash('Invalid email or password.', 'danger')
-
+            flash('Invalid credentials.', 'danger')
     return render_template('login.html')
+
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+        hashed_password = generate_password_hash(password)
+        existing_user = User.query.filter_by(email=email).first()
+        if existing_user:
+            flash('Email already registered.', 'warning')
+        else:
+            new_user = User(email=email, password=hashed_password)
+            db.session.add(new_user)
+            db.session.commit()
+            session['user_id'] = new_user.id
+            return redirect(url_for('index'))
+    return render_template('register.html')
+
 
 # Logout route
 @app.route('/logout')
@@ -98,10 +88,10 @@ def logout():
     flash('Logged out successfully.', 'info')
     return redirect(url_for('login'))
 
-# Pricing route
-@app.route('/pricing')
-def pricing():
-    return render_template('pricing.html')
+# # Pricing route
+# @app.route('/pricing')
+# def pricing():
+#     return render_template('pricing.html')
 
 # Upgrade route
 @app.route('/upgrade/<tier>')
