@@ -5,9 +5,8 @@ import os
 
 # Initialize Flask app
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', 'your-secret-key')  # Change this in production
-app.config['DEBUG'] = True  # ✅ Add this line to enable debug mode
-
+app.secret_key = os.environ.get('SECRET_KEY', 'your-secret-key')
+app.config['DEBUG'] = True
 
 # Database configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
@@ -25,7 +24,7 @@ class User(db.Model):
 with app.app_context():
     db.create_all()
 
-# Home route
+# Home route (analysis page)
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if 'user_id' not in session:
@@ -33,17 +32,14 @@ def index():
 
     user = User.query.get(session['user_id'])
 
+    output = None
+    text = ''
     if request.method == 'POST':
         text = request.form.get('text', '')
-        if user.account_type == 'free':
-            flash('This feature is available for paid users only. Please upgrade your account.', 'danger')
-            return redirect(url_for('pricing'))
+        output = f"Analyzed: {text}"  # Simulated NLP result
 
-        # Simulate NLP result
-        result = f"Analyzed: {text}"
-        return render_template('index.html', user=user, output=result, is_paid=True, text=text)
-
-    return render_template('index.html', user=user, is_paid=user.account_type != 'free')
+    is_paid = user.account_type != 'free'
+    return render_template('index.html', user=user, output=output, is_paid=is_paid, text=text)
 
 # Register route
 @app.route('/register', methods=['GET', 'POST'])

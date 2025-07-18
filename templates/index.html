@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Multimodal Analyzer</title>
+    <title>English NLP Tool</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <style>
         body {
@@ -45,16 +45,16 @@
             margin-top: 10px;
         }
 
-        .download-links a {
-            display: block;
-            margin: 5px 0;
-        }
-
         .output-container {
             margin-top: 2rem;
             background-color: #f4f4f4;
             padding: 1rem;
             border-radius: 8px;
+        }
+
+        .download-links a {
+            display: block;
+            margin: 5px 0;
         }
 
         .flash {
@@ -82,12 +82,18 @@
             background-color: #cff4fc;
             color: #055160;
         }
+
+        .note {
+            margin-top: 1rem;
+            font-style: italic;
+            color: #666;
+        }
     </style>
 </head>
 <body>
     <nav>
         <div class="logo">
-            <h2>Multimodal Analyzer</h2>
+            <h2>English NLP Tool</h2>
         </div>
         <div>
             {% if user %}
@@ -113,21 +119,28 @@
             <button type="submit">Analyze</button>
         </form>
 
-        {% if not is_paid %}
-            <p><strong>Note:</strong> This is a free account. Downloading options are limited. <a href="{{ url_for('pricing') }}">Upgrade here</a>.</p>
-        {% endif %}
-
         {% if output %}
             <div class="output-container">
                 <h3>Analysis Result:</h3>
                 <pre>{{ output }}</pre>
+
                 {% if is_paid %}
+                    <div class="visualization">
+                        <h4>Visualization:</h4>
+                        <p>[Insert your chart or visualization here]</p>
+                    </div>
+
                     <div class="download-links">
                         <h4>Download Options:</h4>
                         <a href="{{ url_for('download_excel') }}">Download Excel</a>
                         <a href="{{ url_for('download_txt') }}">Download TXT</a>
                         <a href="{{ url_for('download_csv') }}">Download CSV</a>
                     </div>
+                {% else %}
+                    <p class="note">
+                        Upgrade to a paid plan to see visualizations and download analysis results.
+                        <a href="{{ url_for('pricing') }}">See pricing</a>.
+                    </p>
                 {% endif %}
             </div>
         {% endif %}
