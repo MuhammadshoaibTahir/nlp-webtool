@@ -1,149 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>English NLP Tool</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-
-        nav {
-            background-color: #333;
-            color: white;
-            padding: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        nav a {
-            color: white;
-            text-decoration: none;
-            margin-left: 1rem;
-        }
-
-        .container {
-            padding: 2rem;
-        }
-
-        .user-info {
-            font-size: 14px;
-        }
-
-        form {
-            margin-bottom: 2rem;
-        }
-
-        textarea {
-            width: 100%;
-            height: 150px;
-            padding: 10px;
-            margin-top: 10px;
-        }
-
-        .output-container {
-            margin-top: 2rem;
-            background-color: #f4f4f4;
-            padding: 1rem;
-            border-radius: 8px;
-        }
-
-        .download-links a {
-            display: block;
-            margin: 5px 0;
-        }
-
-        .flash {
-            padding: 10px;
-            margin: 15px 0;
-            border-radius: 4px;
-        }
-
-        .flash.success {
-            background-color: #d1e7dd;
-            color: #0f5132;
-        }
-
-        .flash.warning {
-            background-color: #fff3cd;
-            color: #664d03;
-        }
-
-        .flash.danger {
-            background-color: #f8d7da;
-            color: #842029;
-        }
-
-        .flash.info {
-            background-color: #cff4fc;
-            color: #055160;
-        }
-
-        .note {
-            margin-top: 1rem;
-            font-style: italic;
-            color: #666;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>NLP Analyzer</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
-    <nav>
-        <div class="logo">
-            <h2>English NLP Tool</h2>
-        </div>
-        <div>
-            {% if user %}
-                <span class="user-info">Hello, {{ user.email }}</span>
-                <a href="{{ url_for('logout') }}">Logout</a>
-            {% endif %}
-        </div>
-    </nav>
+<body class="bg-light">
 
-    <div class="container">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-            {% for category, message in messages %}
-              <div class="flash {{ category }}">{{ message }}</div>
+  <div class="container mt-5">
+    <h1 class="text-center mb-4 text-primary">🌐 English NLP Analyzer</h1>
+    <form method="post" action="/">
+      <div class="mb-3">
+        <label for="text" class="form-label fw-bold">Enter English Text</label>
+        <textarea name="text" id="text" class="form-control" rows="5" required>{{ text }}</textarea>
+      </div>
+      <button type="submit" class="btn btn-success">Analyze</button>
+    </form>
+
+    {% if result %}
+      <div class="mt-5">
+        <h4 class="text-secondary">1️⃣ Part-of-Speech Tags</h4>
+        <ul class="list-group mb-4">
+          {% for word, pos in result.pos_tags %}
+            <li class="list-group-item"><strong>{{ word }}</strong>: {{ pos }}</li>
+          {% endfor %}
+        </ul>
+
+        <h4 class="text-secondary">2️⃣ Named Entities</h4>
+        {% if result.entities %}
+          <ul class="list-group mb-4">
+            {% for ent, label in result.entities %}
+              <li class="list-group-item"><strong>{{ ent }}</strong>: {{ label }}</li>
             {% endfor %}
-          {% endif %}
-        {% endwith %}
-
-        <form method="POST">
-            <label for="text">Enter English Text:</label>
-            <textarea id="text" name="text" placeholder="Enter English text here...">{{ text }}</textarea>
-            <br>
-            <button type="submit">Analyze</button>
-        </form>
-
-        {% if output %}
-            <div class="output-container">
-                <h3>Analysis Result:</h3>
-                <pre>{{ output }}</pre>
-
-                {% if is_paid %}
-                    <div class="visualization">
-                        <h4>Visualization:</h4>
-                        <p>[Insert your chart or visualization here]</p>
-                    </div>
-
-                    <div class="download-links">
-                        <h4>Download Options:</h4>
-                        <a href="{{ url_for('download_excel') }}">Download Excel</a>
-                        <a href="{{ url_for('download_txt') }}">Download TXT</a>
-                        <a href="{{ url_for('download_csv') }}">Download CSV</a>
-                    </div>
-                {% else %}
-                    <p class="note">
-                        Upgrade to a paid plan to see visualizations and download analysis results.
-                        <a href="{{ url_for('pricing') }}">See pricing</a>.
-                    </p>
-                {% endif %}
-            </div>
+          </ul>
+        {% else %}
+          <p class="text-muted">No named entities found.</p>
         {% endif %}
-    </div>
+
+        <h4 class="text-secondary">3️⃣ Dependency Parse</h4>
+        <div class="card p-3 mb-4">
+          {{ result.dep_svg | safe }}
+        </div>
+
+        <h4 class="text-secondary">4️⃣ Named Entity Visualization</h4>
+        <div class="card p-3 mb-5">
+          {{ result.ent_svg | safe }}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
 </body>
 </html>

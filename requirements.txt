@@ -8,3 +8,4 @@ textblob==0.17.1
 langdetect
 setuptools
 wheel
+wordcloud
