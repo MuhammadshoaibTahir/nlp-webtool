@@ -88,10 +88,10 @@ def logout():
     flash('Logged out successfully.', 'info')
     return redirect(url_for('login'))
 
-# # Pricing route
-# @app.route('/pricing')
-# def pricing():
-#     return render_template('pricing.html')
+# Pricing route
+@app.route('/pricing')
+def pricing():
+    return render_template('pricing.html')
 
 # Upgrade route
 @app.route('/upgrade/<tier>')
